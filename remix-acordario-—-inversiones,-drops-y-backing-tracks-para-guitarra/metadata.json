@@ -1,0 +1,8 @@
+{
+  "name": "Remix Acordario — Inversiones, Drops y Backing Tracks para Guitarra",
+  "description": "Explorador de inversiones y drops para guitarra (Drop 2, Drop 3, Triadas), generador de backing tracks interactivos con audio y escáner de partituras/grillas con IA Gemini.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

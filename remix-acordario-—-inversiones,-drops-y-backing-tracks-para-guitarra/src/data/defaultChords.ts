@@ -1,0 +1,235 @@
+import { ChordType, ScaleDefinition } from '../types/music';
+
+export const SCALE_DEG_SEMITONES: Record<number, number> = {
+  1: 0,
+  2: 2,
+  3: 4,
+  4: 5,
+  5: 7,
+  6: 9,
+  7: 11,
+  9: 14,
+  11: 17,
+  13: 21,
+};
+
+export function parseDegreesToTones(degreesStr: string): [number, number, string][] {
+  const out: [number, number, string][] = [];
+  const parts = degreesStr.split(',').map((s) => s.trim()).filter(Boolean);
+
+  for (const g of parts) {
+    const m = g.match(/^(bb|b|#|##)?(\d+)$/);
+    if (!m) continue;
+    const deg = parseInt(m[2], 10);
+    const baseSemi = SCALE_DEG_SEMITONES[deg];
+    if (baseSemi === undefined) continue;
+    const acc = { bb: -2, b: -1, '#': 1, '##': 2 }[m[1] as string] || 0;
+    const semitones = baseSemi + acc;
+    const label = deg === 1 && !acc ? 'R' : g;
+    out.push([semitones, deg, label]);
+  }
+  return out;
+}
+
+export const DEFAULT_CHORD_TYPES: ChordType[] = [
+  {
+    id: 'maj',
+    name: '',
+    label: 'Mayor',
+    aliases: ['', 'maj', 'M', 'mayor'],
+    degrees: '1,3,5',
+    tones: [[0, 1, 'R'], [4, 3, '3'], [7, 5, '5']],
+    scale: 'mayor',
+    active: true,
+  },
+  {
+    id: 'm',
+    name: 'm',
+    label: 'm',
+    aliases: ['m', 'min', '-', 'menor'],
+    degrees: '1,b3,5',
+    tones: [[0, 1, 'R'], [3, 3, 'b3'], [7, 5, '5']],
+    scale: 'eolica',
+    active: true,
+  },
+  {
+    id: 'dim',
+    name: '°',
+    label: '°',
+    aliases: ['dim', '°', 'o'],
+    degrees: '1,b3,b5',
+    tones: [[0, 1, 'R'], [3, 3, 'b3'], [6, 5, 'b5']],
+    scale: 'locria',
+    active: true,
+  },
+  {
+    id: 'aug',
+    name: '+',
+    label: '+',
+    aliases: ['aug', '+', '#5'],
+    degrees: '1,3,#5',
+    tones: [[0, 1, 'R'], [4, 3, '3'], [8, 5, '#5']],
+    scale: 'tonos',
+    active: true,
+  },
+  {
+    id: 'sus4',
+    name: 'sus4',
+    label: 'sus4',
+    aliases: ['sus4', 'sus'],
+    degrees: '1,4,5',
+    tones: [[0, 1, 'R'], [5, 4, '4'], [7, 5, '5']],
+    scale: 'mixolidia',
+    active: true,
+  },
+  {
+    id: 'sus2',
+    name: 'sus2',
+    label: 'sus2',
+    aliases: ['sus2'],
+    degrees: '1,2,5',
+    tones: [[0, 1, 'R'], [2, 2, '2'], [7, 5, '5']],
+    scale: 'mayor',
+    active: true,
+  },
+  {
+    id: 'maj7',
+    name: 'maj7',
+    label: 'maj7',
+    aliases: ['maj7', 'M7', 'Δ', 'Δ7', '7M', 'ma7', '7+'],
+    degrees: '1,3,5,7',
+    tones: [[0, 1, 'R'], [4, 3, '3'], [7, 5, '5'], [11, 7, '7']],
+    scale: 'mayor',
+    active: true,
+  },
+  {
+    id: '7',
+    name: '7',
+    label: '7',
+    aliases: ['7', 'dom7'],
+    degrees: '1,3,5,b7',
+    tones: [[0, 1, 'R'], [4, 3, '3'], [7, 5, '5'], [10, 7, 'b7']],
+    scale: 'mixolidia',
+    active: true,
+  },
+  {
+    id: 'm7',
+    name: 'm7',
+    label: 'm7',
+    aliases: ['m7', '-7', 'min7'],
+    degrees: '1,b3,5,b7',
+    tones: [[0, 1, 'R'], [3, 3, 'b3'], [7, 5, '5'], [10, 7, 'b7']],
+    scale: 'dorica',
+    active: true,
+  },
+  {
+    id: 'm7b5',
+    name: 'm7♭5',
+    label: 'm7♭5',
+    aliases: ['m7b5', 'ø', 'ø7', '-7b5', 'min7b5'],
+    degrees: '1,b3,b5,b7',
+    tones: [[0, 1, 'R'], [3, 3, 'b3'], [6, 5, 'b5'], [10, 7, 'b7']],
+    scale: 'locria',
+    active: true,
+  },
+  {
+    id: 'dim7',
+    name: '°7',
+    label: '°7',
+    aliases: ['dim7', '°7', 'o7'],
+    degrees: '1,b3,b5,bb7',
+    tones: [[0, 1, 'R'], [3, 3, 'b3'], [6, 5, 'b5'], [9, 7, 'bb7']],
+    scale: 'dism',
+    active: true,
+  },
+  {
+    id: 'mmaj7',
+    name: 'm(maj7)',
+    label: 'm(maj7)',
+    aliases: ['mmaj7', 'm(maj7)', 'mM7', '-Δ', 'mΔ', 'm7M', 'm(7M)'],
+    degrees: '1,b3,5,7',
+    tones: [[0, 1, 'R'], [3, 3, 'b3'], [7, 5, '5'], [11, 7, '7']],
+    scale: 'melodica',
+    active: true,
+  },
+  {
+    id: '6',
+    name: '6',
+    label: '6',
+    aliases: ['6'],
+    degrees: '1,3,5,6',
+    tones: [[0, 1, 'R'], [4, 3, '3'], [7, 5, '5'], [9, 6, '6']],
+    scale: 'mayor',
+    active: true,
+  },
+  {
+    id: 'm6',
+    name: 'm6',
+    label: 'm6',
+    aliases: ['m6', '-6'],
+    degrees: '1,b3,5,6',
+    tones: [[0, 1, 'R'], [3, 3, 'b3'], [7, 5, '5'], [9, 6, '6']],
+    scale: 'dorica',
+    active: true,
+  },
+  {
+    id: '7sus4',
+    name: '7sus4',
+    label: '7sus4',
+    aliases: ['7sus4', '7sus'],
+    degrees: '1,4,5,b7',
+    tones: [[0, 1, 'R'], [5, 4, '4'], [7, 5, '5'], [10, 7, 'b7']],
+    scale: 'mixolidia',
+    active: true,
+  },
+  {
+    id: '7b5',
+    name: '7♭5',
+    label: '7♭5',
+    aliases: ['7b5'],
+    degrees: '1,3,b5,b7',
+    tones: [[0, 1, 'R'], [4, 3, '3'], [6, 5, 'b5'], [10, 7, 'b7']],
+    scale: 'tonos',
+    active: true,
+  },
+  {
+    id: '7#5',
+    name: '7♯5',
+    label: '7♯5',
+    aliases: ['7#5', '7+5', 'aug7'],
+    degrees: '1,3,#5,b7',
+    tones: [[0, 1, 'R'], [4, 3, '3'], [8, 5, '#5'], [10, 7, 'b7']],
+    scale: 'tonos',
+    active: true,
+  },
+  {
+    id: 'maj7#5',
+    name: 'maj7♯5',
+    label: 'maj7♯5',
+    aliases: ['maj7#5', 'M7#5', 'Δ#5'],
+    degrees: '1,3,#5,7',
+    tones: [[0, 1, 'R'], [4, 3, '3'], [8, 5, '#5'], [11, 7, '7']],
+    scale: 'lidaum',
+    active: true,
+  },
+];
+
+export const SCALES: ScaleDefinition[] = [
+  { id: 'mayor', name: 'Mayor (jónica)', degrees: '1,2,3,4,5,6,7' },
+  { id: 'dorica', name: 'Dórica', degrees: '1,2,b3,4,5,6,b7' },
+  { id: 'frigia', name: 'Frigia', degrees: '1,b2,b3,4,5,b6,b7' },
+  { id: 'lidia', name: 'Lidia', degrees: '1,2,3,#4,5,6,7' },
+  { id: 'mixolidia', name: 'Mixolidia', degrees: '1,2,3,4,5,6,b7' },
+  { id: 'eolica', name: 'Menor natural (eólica)', degrees: '1,2,b3,4,5,b6,b7' },
+  { id: 'locria', name: 'Locria', degrees: '1,b2,b3,4,b5,b6,b7' },
+  { id: 'armonica', name: 'Menor armónica', degrees: '1,2,b3,4,5,b6,7' },
+  { id: 'melodica', name: 'Menor melódica', degrees: '1,2,b3,4,5,6,7' },
+  { id: 'lidiadom', name: 'Lidia dominante', degrees: '1,2,3,#4,5,6,b7' },
+  { id: 'lidaum', name: 'Lidia aumentada', degrees: '1,2,3,#4,#5,6,7' },
+  { id: 'alterada', name: 'Alterada', degrees: '1,b2,#2,3,#4,#5,b7' },
+  { id: 'tonos', name: 'Tonos enteros', degrees: '1,2,3,#4,#5,b7' },
+  { id: 'dism', name: 'Disminuida (tono-semitono)', degrees: '1,2,b3,4,b5,b6,bb7,7' },
+  { id: 'penta', name: 'Pentatónica mayor', degrees: '1,2,3,5,6' },
+  { id: 'pentam', name: 'Pentatónica menor', degrees: '1,b3,4,5,b7' },
+  { id: 'blues', name: 'Blues', degrees: '1,b3,4,b5,5,b7' },
+];
